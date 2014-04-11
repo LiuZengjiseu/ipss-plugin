@@ -67,6 +67,7 @@ public class TopologyHelper {
 	boolean displayName = false;
 	boolean displayBaseVolt = false;
 	double voltageLevel = 1.0;
+	boolean onlyActiveBranch = false;
 
 	public TopologyHelper(BaseAclfNetwork<?,?> net) throws InterpssException {
 		this.net = net;
@@ -100,6 +101,9 @@ public class TopologyHelper {
 
 	public void setVoltageLevel(double newVoltLevel) {
 		this.voltageLevel = newVoltLevel;
+	}
+	public void setOnlyActiveBranch(boolean plotActiveBranchOnly){
+		this.onlyActiveBranch = plotActiveBranchOnly;
 	}
 
 	/**
@@ -627,7 +631,8 @@ public class TopologyHelper {
 					&& ((AclfBus) source).getVoltageMag(UnitType.kV) >= voltageLevel)
 				for (Branch bra : source.getBranchList()) {
                     
-					if (!bra.isGroundBranch() && bra instanceof AclfBranch) {
+					if (!bra.isGroundBranch() && bra instanceof AclfBranch 
+							&& onlyActiveBranch? bra.isActive():true) {
 						type = getBranchType((AclfBranch) bra);
 						isToBus = bra.getFromBusId().equals(busId);
 						String nextBusId = isToBus ? bra.getToBusId() : bra
