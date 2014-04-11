@@ -295,7 +295,7 @@ BUS  10002 GZ-HLZ      220.00 CKT     MW     MVAR     MVA  %I 1.0445PU  -47.34  
 		AclfBus toBus = onFromSide ? branch.getToAclfBus() : branch.getFromAclfBus();
 		
 		String s = String.format(" TO %6d %-12s",	toBus.getNumber(), toBus.getName());
-		double vkv = toBus.getBaseVoltage() * 0.001;;
+		double vkv = toBus.getBaseVoltage() * 0.001;
 		if (vkv > 100.0)
 			s += String.format("%7.2f ", vkv);
 		else	
