@@ -632,7 +632,7 @@ public class TopologyHelper {
 				for (Branch bra : source.getBranchList()) {
                     
 					if (!bra.isGroundBranch() && bra instanceof AclfBranch 
-							&& onlyActiveBranch? bra.isActive():true) {
+							&& (onlyActiveBranch? bra.isActive():true)) {
 						type = getBranchType((AclfBranch) bra);
 						isToBus = bra.getFromBusId().equals(busId);
 						String nextBusId = isToBus ? bra.getToBusId() : bra

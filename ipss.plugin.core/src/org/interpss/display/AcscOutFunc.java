@@ -90,7 +90,7 @@ public class AcscOutFunc {
 			str.append("          Fault type:    " + bf.getFaultCode() + "\n");
 			str.append("          Branch name:   "
 					+ bf.getFaultBranch().getName() + "\n");
-			str.append("          Fault type:    " + bf.getFaultCode() + "\n");
+			//str.append("          Fault type:    " + bf.getFaultCode() + "\n");
 
 			
 			str.append(faultCurrent(bf, baseKVA, baseV));
@@ -115,7 +115,7 @@ public class AcscOutFunc {
 			str.append("          Fault Id:      " + bf.getId() + "\n");
 			str.append("          Bus name:      " + bf.getBus().getName() + "\n");
 			str.append("          Fault type:    " + bf.getFaultCode() + "\n");
-			
+			str.append("          Fault current zero/pos/neg (pu)  :"+bf.getFaultResult().getSCCurrent_012()+ "\n");
 			str.append(faultCurrent(bf, baseKVA, baseV));
 			
 			str.append(displayBusVoltage(bf));
