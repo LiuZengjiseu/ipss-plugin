@@ -37,5 +37,9 @@ public class IEEE009Bus_Test extends CorePluginTestSetup{
 		//System.out.println(AclfOutFunc.loadFlowSummary(net));
   		assertTrue(Math.abs(swing.getGenResults(UnitType.PU).getReal()-0.7164098)<1.0E-5);
   		assertTrue(Math.abs(swing.getGenResults(UnitType.PU).getImaginary()-0.2704474)<1.0E-5);
+  		
+  		for(AclfBus bus: net.getBusList()){
+  			assertTrue(bus.getPowerMismatch().abs()<1.0E-4);
+  		}
 	}
 }

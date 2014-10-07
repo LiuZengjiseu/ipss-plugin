@@ -85,7 +85,7 @@ public class DStab_IEEE39Bus_Test  extends DStabTestSetupBase{
 			
 			dstabAlgo.setSimuMethod(DynamicSimuMethod.MODIFIED_EULER);
 			dstabAlgo.setSimuStepSec(0.004167);
-			dstabAlgo.setTotalSimuTimeSec(0);
+			dstabAlgo.setTotalSimuTimeSec(0.9);
 			dstabAlgo.setRefMachine(dsNet.getMachine("Bus31-mach1"));
 			dsNet.setNetEqnIterationNoEvent(6);
 			dsNet.addDynamicEvent(create3PhaseFaultEvent("Bus2",dsNet,1,0.0833),"3phaseFault@Bus2");
@@ -106,7 +106,7 @@ public class DStab_IEEE39Bus_Test  extends DStabTestSetupBase{
 				dstabAlgo.performSimulation();
 
 			}
-			//System.out.println(sm.toCSVString(sm.getMachAngleTable()));
+			System.out.println(sm.toCSVString(sm.getMachAngleTable()));
 			//System.out.println(sm.toCSVString(sm.getMachEfdTable()));
 			FileUtil.writeText2File("E:/ieee39_angle.csv", sm.toCSVString(sm.getMachAngleTable()));
 			FileUtil.writeText2File("E:/ieee39_efd.csv", sm.toCSVString(sm.getMachEfdTable()));
