@@ -124,6 +124,7 @@ public class CmdRunner {
 	 */
 	public boolean run() throws FileNotFoundException, IOException, InterpssException {
 		if (this.runType == RunType.Aclf) {
+			/*
 			// load the Aclf run configure info stored in the control file
 			AclfRunConfigBean aclfBean = loadAclfRunConfigInfo();
 			
@@ -146,10 +147,12 @@ public class CmdRunner {
 
 			//return SimuObjectFactory.createSimuCtxTypeAclfNet(net);
 			return true;
+			*/
+			setDslRunner(new AclfDslRunner());
 			
 		}
 		else if(this.runType == RunType.Acsc) {
-			
+			/*
 			// load the Acsc run configure info stored in the control file
 			AcscRunConfigBean acscBean = loadAcscRunConfigInfo();
 			
@@ -167,20 +170,19 @@ public class CmdRunner {
 			
 			// output short circuit result
 			
-			// require the base votlage of the fault point
+			// require the base voltage of the fault point
 			double baseV = acscBean.type == SimpleFaultType.BUS_FAULT? net.getBus(acscBean.faultBusId).getBaseVoltage():
 				                                  net.getBus(acscBean.faultBranchFromId).getBaseVoltage();
 				
 			FileUtil.write2File(acscBean.acscOutputFileName, scResults.toString(baseV).getBytes());
 			ipssLogger.info("Ouput written to " + acscBean.acscOutputFileName);
 			
-			/*
-			// create a simuContext and return it
-			SimuContext sc = SimuObjectFactory.createSimuCtxTypeAcscNet();
-			sc.setAcscNet(net);
-			return sc;
-			*/
+			
 			return true;
+			*/
+			
+	       setDslRunner(new AcscDslRunner());
+			
 			
 		}
 		else if(this.runType == RunType.DStab) {
@@ -213,18 +215,18 @@ public class CmdRunner {
 			*/
 			setDslRunner(new DstabDslRunner());
 			
-			getDslRunner().loadConfiguraitonBean(this.controlFilename);
-			return  getDslRunner().runSimulation();
+
 		}
 		
 		else if(this.runType == RunType.Custom) {
-			 getDslRunner().loadConfiguraitonBean(this.controlFilename);
-			return  getDslRunner().runSimulation();
+			// Mike, how can I inject a custom DslRunner here,without predefine it;
 		}
-		
 		else {
 			throw new InterpssException("Function Not implemented");
 		}
+		
+		 getDslRunner().loadConfiguraitonBean(this.controlFilename);
+			return  getDslRunner().runSimulation();
 		
 	}
 	
@@ -238,7 +240,7 @@ public class CmdRunner {
 		
 	}
 	
-	
+	/*
 	private AclfRunConfigBean loadAclfRunConfigInfo() throws IOException {
 		AclfRunConfigBean aclfBean = BaseJSONBean.toBean(this.controlFilename, AclfRunConfigBean.class);
 
@@ -282,5 +284,6 @@ public class CmdRunner {
 		
 		return dstabBean;
 	}
+	*/
 	
 }

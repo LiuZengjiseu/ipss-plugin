@@ -66,6 +66,10 @@ public class AclfDslRunner implements BaseDslRunner{
 		this.net = net;
 	}
 	
+	public AclfDslRunner() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * run aclf using the ODM case definition
 	 * 

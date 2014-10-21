@@ -70,6 +70,10 @@ public class AcscDslRunner implements BaseDslRunner{
 		this.net = net;
 	}
 	
+	public AcscDslRunner() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * run the acsc analysis case and return the analysis results
 	 * 
