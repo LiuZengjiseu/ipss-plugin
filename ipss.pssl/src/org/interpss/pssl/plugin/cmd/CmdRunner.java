@@ -59,7 +59,7 @@ import com.interpss.simu.SimuCtxType;
  *
  */
 public class CmdRunner {
-	public static enum RunType {Aclf, Acsc, DStab};
+	public static enum RunType {Aclf, Acsc, DStab, Custom};
 	
 	/**
 	 * default output dir
@@ -80,6 +80,7 @@ public class CmdRunner {
 	 * Cmd run control file
 	 */
 	private String controlFilename = null;
+	private BaseDslRunner dslRunner = null;
 	
 	/**
 	 * Cmd run configure JSON bean 
@@ -121,7 +122,7 @@ public class CmdRunner {
 	 * @throws FileNotFoundException
 	 * @throws InterpssException
 	 */
-	public SimuContext run() throws FileNotFoundException, IOException, InterpssException {
+	public boolean run() throws FileNotFoundException, IOException, InterpssException {
 		if (this.runType == RunType.Aclf) {
 			// load the Aclf run configure info stored in the control file
 			AclfRunConfigBean aclfBean = loadAclfRunConfigInfo();
@@ -143,7 +144,8 @@ public class CmdRunner {
 			FileUtil.write2File(aclfBean.aclfOutputFileName, aclfResultSummary.apply(net).toString().getBytes());
 			ipssLogger.info("Ouput written to " + aclfBean.aclfOutputFileName);
 
-			return SimuObjectFactory.createSimuCtxTypeAclfNet(net);
+			//return SimuObjectFactory.createSimuCtxTypeAclfNet(net);
+			return true;
 			
 		}
 		else if(this.runType == RunType.Acsc) {
@@ -172,13 +174,18 @@ public class CmdRunner {
 			FileUtil.write2File(acscBean.acscOutputFileName, scResults.toString(baseV).getBytes());
 			ipssLogger.info("Ouput written to " + acscBean.acscOutputFileName);
 			
+			/*
 			// create a simuContext and return it
 			SimuContext sc = SimuObjectFactory.createSimuCtxTypeAcscNet();
 			sc.setAcscNet(net);
 			return sc;
+			*/
+			return true;
 			
 		}
 		else if(this.runType == RunType.DStab) {
+			
+			/*
 			DstabRunConfigBean dstabBean = loadDStabRunConfigInfo();
 			
 			  // import the file(s)
@@ -196,17 +203,23 @@ public class CmdRunner {
 			
 			//output the result
 	        
-		
-			
 			if(!dstabBean.dstabOutputFileName.equals("")){
 				FileUtil.write2File(dstabBean.dstabOutputFileName, outputHdler.toString().getBytes());
 				ipssLogger.info("Ouput written to " + dstabBean.dstabOutputFileName);
 			}
 			
+		
+			return true;
+			*/
+			setDslRunner(new DstabDslRunner());
 			
-			SimuContext dstabSC = SimuObjectFactory.createSimuNetwork(SimuCtxType.DSTABILITY_NET);
-			dstabSC.setDStabilityNet(net);
-			return dstabSC;
+			getDslRunner().loadConfiguraitonBean(this.controlFilename);
+			return  getDslRunner().runSimulation();
+		}
+		
+		else if(this.runType == RunType.Custom) {
+			 getDslRunner().loadConfiguraitonBean(this.controlFilename);
+			return  getDslRunner().runSimulation();
 		}
 		
 		else {
@@ -214,6 +227,17 @@ public class CmdRunner {
 		}
 		
 	}
+	
+	public void setDslRunner(BaseDslRunner customDslRunner){
+		this.dslRunner = customDslRunner;
+		
+	}
+	
+	public BaseDslRunner  getDslRunner(){
+		return this.dslRunner;
+		
+	}
+	
 	
 	private AclfRunConfigBean loadAclfRunConfigInfo() throws IOException {
 		AclfRunConfigBean aclfBean = BaseJSONBean.toBean(this.controlFilename, AclfRunConfigBean.class);

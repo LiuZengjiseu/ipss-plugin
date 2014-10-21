@@ -138,7 +138,7 @@ public class CorePluginFunction {
 	 *   
 	 *   StringBuffer outText = aclfResultSummary.apply(aclfNet);
 	 */
-	public static Function<AclfNetwork, StringBuffer> aclfResultSummary = net -> {
+	public static Function<BaseAclfNetwork<?,?>, StringBuffer> aclfResultSummary = net -> {
 				return AclfOutFunc.loadFlowSummary(net);
 		};
 

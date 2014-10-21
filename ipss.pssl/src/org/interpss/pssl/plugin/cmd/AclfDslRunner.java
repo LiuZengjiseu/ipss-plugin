@@ -24,16 +24,25 @@
 
 package org.interpss.pssl.plugin.cmd;
 
+import static com.interpss.common.util.IpssLogger.ipssLogger;
+import static org.interpss.CorePluginFunction.aclfResultSummary;
 import static org.interpss.mapper.odm.ODMUnitHelper.toApparentPowerUnit;
+import static org.interpss.pssl.plugin.IpssAdapter.importAclfNet;
+
+import java.io.IOException;
 
 import org.ieee.odm.schema.IpssAclfAlgorithmXmlType;
 import org.ieee.odm.schema.LfMethodEnumType;
 import org.interpss.numeric.datatype.Unit.UnitType;
+import org.interpss.pssl.plugin.IpssAdapter.FileImportDSL;
 import org.interpss.pssl.plugin.cmd.json.AclfRunConfigBean;
+import org.interpss.pssl.plugin.cmd.json.BaseJSONBean;
 import org.interpss.pssl.simu.IpssAclf;
 import org.interpss.pssl.simu.IpssAclf.LfAlgoDSL;
+import org.interpss.util.FileUtil;
 
 import com.interpss.common.exp.InterpssException;
+import com.interpss.common.util.StringUtil;
 import com.interpss.core.aclf.AclfNetwork;
 import com.interpss.core.aclf.BaseAclfNetwork;
 import com.interpss.core.algo.AclfMethod;
@@ -44,8 +53,9 @@ import com.interpss.core.algo.AclfMethod;
  * @author mzhou
  *
  */
-public class AclfDslRunner {
+public class AclfDslRunner implements BaseDslRunner{
 	private BaseAclfNetwork<?,?> net;
+	private AclfRunConfigBean aclfBean = null;
 	
 	/**
 	 * constructor
@@ -93,31 +103,73 @@ public class AclfDslRunner {
 	/**
 	 * run aclf using the JSON case definition
 	 * 
-	 * @param algoBean
+	 * @param aclfConfigBean
 	 * @return
 	 * @throws InterpssException 
 	 */
-	public boolean runAclf(AclfRunConfigBean algoBean) throws InterpssException {
+	public boolean runAclf(AclfRunConfigBean aclfConfigBean) throws InterpssException {
 		LfAlgoDSL algoDsl = IpssAclf.createAclfAlgo(net);
 		
 		// if algoBean is null, run with the default setting
-		if(algoBean !=null){
-			algoDsl.lfMethod(algoBean.lfMethod == LfMethodEnumType.NR ? AclfMethod.NR
-						: (algoBean.lfMethod == LfMethodEnumType.PQ ? AclfMethod.PQ
-								: (algoBean.lfMethod == LfMethodEnumType.CUSTOM ? AclfMethod.CUSTOM 
+		if(aclfConfigBean !=null){
+			algoDsl.lfMethod(aclfConfigBean.lfMethod == LfMethodEnumType.NR ? AclfMethod.NR
+						: (aclfConfigBean.lfMethod == LfMethodEnumType.PQ ? AclfMethod.PQ
+								: (aclfConfigBean.lfMethod == LfMethodEnumType.CUSTOM ? AclfMethod.CUSTOM 
 										: AclfMethod.GS)));
 			
-			algoDsl.setMaxIterations(algoBean.maxIteration);
+			algoDsl.setMaxIterations(aclfConfigBean.maxIteration);
 			
-			algoDsl.setTolerance(algoBean.tolerance, UnitType.PU);
+			algoDsl.setTolerance(aclfConfigBean.tolerance, UnitType.PU);
 			
-			algoDsl.nonDivergent(algoBean.nonDivergent);
+			algoDsl.nonDivergent(aclfConfigBean.nonDivergent);
 	
-			algoDsl.initBusVoltage(algoBean.initBusVoltage);
+			algoDsl.initBusVoltage(aclfConfigBean.initBusVoltage);
 	
-			algoDsl.gsAccFactor(algoBean.accFactor);
+			algoDsl.gsAccFactor(aclfConfigBean.accFactor);
 		}
 		
 		return algoDsl.runLoadflow();	
+	}
+
+	@Override
+	public BaseJSONBean loadConfiguraitonBean(String beanFileName) {
+		try {
+			aclfBean = BaseJSONBean.toBean(beanFileName, AclfRunConfigBean.class);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return aclfBean;
+	}
+
+	@Override
+	public boolean runSimulation() {
+		
+		// load the study case file
+		FileImportDSL inDsl = importAclfNet(aclfBean.aclfCaseFileName)
+				.setFormat(aclfBean.format)
+				.setPsseVersion(aclfBean.version)
+				.load();	
+
+		try {
+			
+			// map ODM to InterPSS model object
+			net = inDsl.getImportedObj();
+			
+			// run loadflow 
+		      runAclf(aclfBean);
+		} catch (InterpssException e1) {
+		
+			e1.printStackTrace();
+			return false;
+		}	
+		
+		// output Loadflow result
+		FileUtil.write2File(aclfBean.aclfOutputFileName, aclfResultSummary.apply(net).toString().getBytes());
+		ipssLogger.info("Ouput written to " + aclfBean.aclfOutputFileName);
+
+	
+		return true;
 	}
 }

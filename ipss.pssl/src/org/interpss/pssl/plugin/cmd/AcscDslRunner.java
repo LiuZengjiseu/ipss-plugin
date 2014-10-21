@@ -24,6 +24,10 @@
 
 package org.interpss.pssl.plugin.cmd;
 
+import static com.interpss.common.util.IpssLogger.ipssLogger;
+
+import java.io.IOException;
+
 import org.apache.commons.math3.complex.Complex;
 import org.ieee.odm.schema.AcscBaseFaultXmlType;
 import org.ieee.odm.schema.AcscBranchFaultXmlType;
@@ -32,9 +36,13 @@ import org.ieee.odm.schema.AcscFaultAnalysisXmlType;
 import org.ieee.odm.schema.AcscFaultCategoryEnumType;
 import org.ieee.odm.schema.AcscFaultTypeEnumType;
 import org.ieee.odm.schema.ComplexXmlType;
+import org.interpss.pssl.plugin.IpssAdapter.FileImportDSL;
+import org.interpss.pssl.plugin.cmd.json.AclfRunConfigBean;
 import org.interpss.pssl.plugin.cmd.json.AcscRunConfigBean;
+import org.interpss.pssl.plugin.cmd.json.BaseJSONBean;
 import org.interpss.pssl.simu.IpssAcsc;
 import org.interpss.pssl.simu.IpssAcsc.FaultAlgoDSL;
+import org.interpss.util.FileUtil;
 
 import com.interpss.common.exp.InterpssException;
 import com.interpss.core.acsc.AcscNetwork;
@@ -49,8 +57,9 @@ import com.interpss.core.datatype.IFaultResult;
  * @author mzhou
  *
  */
-public class AcscDslRunner {
+public class AcscDslRunner implements BaseDslRunner{
 	private BaseAcscNetwork<?,?> net;
+	private AcscRunConfigBean acscBean;
 	
 	/**
 	 * constructor
@@ -139,5 +148,49 @@ public class AcscDslRunner {
 	
 	private Complex toComplex(ComplexXmlType x) {
 		return new Complex(x.getRe(), x.getIm());
+	}
+
+	@Override
+	public BaseJSONBean loadConfiguraitonBean(String beanFileName) {
+		try {
+			acscBean = BaseJSONBean.toBean(beanFileName, AcscRunConfigBean.class);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return acscBean;
+	}
+
+	@Override
+	public boolean runSimulation() {
+		 // import the file(s)
+		FileImportDSL inDsl =  new FileImportDSL();
+		inDsl.setFormat(acscBean.runAclfConfig.format)
+			 .setPsseVersion(acscBean.runAclfConfig.version)
+		     .load(new String[]{acscBean.runAclfConfig.aclfCaseFileName,
+				acscBean.seqFileName});
+		
+		// map ODM to InterPSS model object
+		IFaultResult scResults = null;
+		try {
+			net = inDsl.getImportedObj();
+			scResults = runAcsc(acscBean);
+		} catch (InterpssException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		// output short circuit result
+		
+		// require the base votlage of the fault point
+		double baseV = acscBean.type == SimpleFaultType.BUS_FAULT? net.getBus(acscBean.faultBusId).getBaseVoltage():
+			                                  net.getBus(acscBean.faultBranchFromId).getBaseVoltage();
+			
+		FileUtil.write2File(acscBean.acscOutputFileName, scResults.toString(baseV).getBytes());
+		ipssLogger.info("Ouput written to " + acscBean.acscOutputFileName);
+		
+		return true;
 	}
 }
