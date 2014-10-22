@@ -53,7 +53,7 @@ import com.interpss.core.algo.AclfMethod;
  * @author mzhou
  *
  */
-public class AclfDslRunner implements BaseDslRunner{
+public class BaseAclfDslRunner implements BaseDslRunner{
 	private BaseAclfNetwork<?,?> net;
 	private AclfRunConfigBean aclfBean = null;
 	
@@ -62,11 +62,11 @@ public class AclfDslRunner implements BaseDslRunner{
 	 * 
 	 * @param net AclfNetwork object
 	 */
-	public AclfDslRunner(BaseAclfNetwork<?,?> net) {
+	public BaseAclfDslRunner(BaseAclfNetwork<?,?> net) {
 		this.net = net;
 	}
 	
-	public AclfDslRunner() {
+	public BaseAclfDslRunner() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -105,7 +105,8 @@ public class AclfDslRunner implements BaseDslRunner{
 	}
 	
 	/**
-	 * run aclf using the JSON case definition
+	 * run aclf using the JSON case definition. 
+	 * This is also the interface that a customized Aclf DslRunner should override
 	 * 
 	 * @param aclfConfigBean
 	 * @return

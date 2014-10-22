@@ -19,7 +19,7 @@ import com.interpss.dstab.cache.StateMonitor;
 import com.interpss.dstab.common.IDStabSimuOutputHandler;
 import com.interpss.dstab.devent.DynamicEvent;
 
-public class DstabDslRunner implements BaseDslRunner{
+public class BaseDstabDslRunner implements BaseDslRunner{
 	
 	private DStabilityNetwork net;
 	private DstabRunConfigBean dstabBean;
@@ -29,14 +29,20 @@ public class DstabDslRunner implements BaseDslRunner{
 	 * 
 	 * @param net DStabilityNetwork object
 	 */
-	public DstabDslRunner(DStabilityNetwork net) {
+	public BaseDstabDslRunner(DStabilityNetwork net) {
 		this.net = net;
 	}
 	
-	public DstabDslRunner() {
+	public BaseDstabDslRunner() {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * A common interface for all DSLRunner. Any customized DStab DSLRunner should override it.
+	 * 
+	 * @param dstabConfigBean
+	 * @return
+	 */
 	public IDStabSimuOutputHandler runDstab (DstabRunConfigBean dstabConfigBean){
 		
 		IpssDStab dstabDSL = new IpssDStab(net);

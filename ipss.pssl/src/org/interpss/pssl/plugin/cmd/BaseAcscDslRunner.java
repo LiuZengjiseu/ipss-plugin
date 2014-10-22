@@ -57,7 +57,7 @@ import com.interpss.core.datatype.IFaultResult;
  * @author mzhou
  *
  */
-public class AcscDslRunner implements BaseDslRunner{
+public class BaseAcscDslRunner implements BaseDslRunner{
 	private BaseAcscNetwork<?,?> net;
 	private AcscRunConfigBean acscBean;
 	
@@ -66,11 +66,11 @@ public class AcscDslRunner implements BaseDslRunner{
 	 * 
 	 * @param net AcscNetwork object
 	 */
-	public AcscDslRunner(BaseAcscNetwork<?,?> net) {
+	public BaseAcscDslRunner(BaseAcscNetwork<?,?> net) {
 		this.net = net;
 	}
 	
-	public AcscDslRunner() {
+	public BaseAcscDslRunner() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -111,6 +111,7 @@ public class AcscDslRunner implements BaseDslRunner{
 	
 	/**
 	 * run the acsc analysis case and return the analysis results
+	 * This is also the interface that a customized Acsc DslRunner should override
 	 * 
 	 * @param acscConfigBean
 	 * @return

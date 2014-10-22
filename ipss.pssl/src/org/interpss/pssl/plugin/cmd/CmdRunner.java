@@ -59,7 +59,7 @@ import com.interpss.simu.SimuCtxType;
  *
  */
 public class CmdRunner {
-	public static enum RunType {Aclf, Acsc, DStab, Custom};
+	public static enum RunType {Aclf, Acsc, DStab};
 	
 	/**
 	 * default output dir
@@ -148,7 +148,7 @@ public class CmdRunner {
 			//return SimuObjectFactory.createSimuCtxTypeAclfNet(net);
 			return true;
 			*/
-			setDslRunner(new AclfDslRunner());
+			setDslRunner(new BaseAclfDslRunner());
 			
 		}
 		else if(this.runType == RunType.Acsc) {
@@ -181,7 +181,7 @@ public class CmdRunner {
 			return true;
 			*/
 			
-	       setDslRunner(new AcscDslRunner());
+	       setDslRunner(new BaseAcscDslRunner());
 			
 			
 		}
@@ -213,14 +213,12 @@ public class CmdRunner {
 		
 			return true;
 			*/
-			setDslRunner(new DstabDslRunner());
+			setDslRunner(new BaseDstabDslRunner());
 			
 
 		}
 		
-		else if(this.runType == RunType.Custom) {
-			// Mike, how can I inject a custom DslRunner here,without predefine it;
-		}
+		
 		else {
 			throw new InterpssException("Function Not implemented");
 		}
