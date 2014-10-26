@@ -148,7 +148,7 @@ public class CmdRunner {
 			//return SimuObjectFactory.createSimuCtxTypeAclfNet(net);
 			return true;
 			*/
-			setDslRunner(new BaseAclfDslRunner());
+			setDslRunner(DslRunnerFactory.createAclfDslRunner());
 			
 		}
 		else if(this.runType == RunType.Acsc) {
@@ -181,7 +181,7 @@ public class CmdRunner {
 			return true;
 			*/
 			
-	       setDslRunner(new BaseAcscDslRunner());
+	       setDslRunner(DslRunnerFactory.createAcscDslRunner());
 			
 			
 		}
@@ -213,7 +213,7 @@ public class CmdRunner {
 		
 			return true;
 			*/
-			setDslRunner(new BaseDstabDslRunner());
+			setDslRunner(DslRunnerFactory.createDStabDslRunner());
 			
 
 		}
@@ -228,8 +228,8 @@ public class CmdRunner {
 		
 	}
 	
-	public void setDslRunner(BaseDslRunner customDslRunner){
-		this.dslRunner = customDslRunner;
+	public void setDslRunner(BaseDslRunner newDslRunner){
+		this.dslRunner = newDslRunner;
 		
 	}
 	

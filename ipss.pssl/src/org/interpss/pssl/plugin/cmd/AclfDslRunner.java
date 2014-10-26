@@ -53,7 +53,7 @@ import com.interpss.core.algo.AclfMethod;
  * @author mzhou
  *
  */
-public class BaseAclfDslRunner implements BaseDslRunner{
+public class AclfDslRunner implements BaseDslRunner{
 	private BaseAclfNetwork<?,?> net;
 	private AclfRunConfigBean aclfBean = null;
 	
@@ -62,11 +62,11 @@ public class BaseAclfDslRunner implements BaseDslRunner{
 	 * 
 	 * @param net AclfNetwork object
 	 */
-	public BaseAclfDslRunner(BaseAclfNetwork<?,?> net) {
+	public AclfDslRunner(BaseAclfNetwork<?,?> net) {
 		this.net = net;
 	}
 	
-	public BaseAclfDslRunner() {
+	public AclfDslRunner() {
 		// TODO Auto-generated constructor stub
 	}
 
