@@ -17,7 +17,7 @@ public class DslRunnerFactory {
 	public static BaseDstabDslRunner createDStabDslRunner(){
 		if(dstabDslRunner != null)
 			return dstabDslRunner;
-		return new BaseDstabDslRunner();
+		return new DStabDslRunner();
 	}
 	
 	public  static void setDStabDslRunnerCreator(BaseDstabDslRunner newDstabDslRunner){

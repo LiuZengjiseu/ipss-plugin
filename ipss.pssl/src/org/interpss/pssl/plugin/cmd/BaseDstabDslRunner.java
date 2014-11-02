@@ -19,64 +19,20 @@ import com.interpss.dstab.cache.StateMonitor;
 import com.interpss.dstab.common.IDStabSimuOutputHandler;
 import com.interpss.dstab.devent.DynamicEvent;
 
-public class BaseDstabDslRunner implements BaseDslRunner{
+public abstract class BaseDstabDslRunner implements BaseDslRunner{
 	
-	private DStabilityNetwork net;
-	private DstabRunConfigBean dstabBean;
+	protected DStabilityNetwork net;
+	protected DstabRunConfigBean dstabBean;
 	
-	/**
-	 * constructor
-	 * 
-	 * @param net DStabilityNetwork object
-	 */
-	public BaseDstabDslRunner(DStabilityNetwork net) {
-		this.net = net;
-	}
-	
-	public BaseDstabDslRunner() {
-		// TODO Auto-generated constructor stub
-	}
+
 
 	/**
-	 * A common interface for all DSLRunner. Any customized DStab DSLRunner should override it.
+	 * A common interface for all DSLRunner. Any DStab DSLRunner should override it.
 	 * 
 	 * @param dstabConfigBean
 	 * @return
 	 */
-	public IDStabSimuOutputHandler runDstab (DstabRunConfigBean dstabConfigBean){
-		
-		IpssDStab dstabDSL = new IpssDStab(net);
-		
-		
-		dstabDSL.setTotalSimuTimeSec(dstabConfigBean.totalSimuTimeSec)
-		        .setSimuTimeStep(dstabConfigBean.simuTimeStepSec)
-		        .setIntegrationMethod(dstabConfigBean.method)
-		        .setRefMachine(dstabConfigBean.referenceGeneratorId);
-		
-		
-		StateMonitor sm = new StateMonitor();
-		sm.addBusStdMonitor(dstabConfigBean.monitoringBusAry);
-		sm.addGeneratorStdMonitor(dstabConfigBean.monitoringGenAry);
-		
-		// set the output handler
-		dstabDSL.setDynSimuOutputHandler(sm)
-		        .setSimuOutputPerNSteps(dstabConfigBean.outputPerNSteps);
-		
-		dstabDSL.addBusFaultEvent(dstabConfigBean.acscConfigBean.faultBusId,  
-				                                              dstabConfigBean.acscConfigBean.category, 
-											                  dstabConfigBean.eventStartTimeSec,
-											                  dstabConfigBean.eventDurationSec, 
-											                  dstabConfigBean.acscConfigBean.zLG.toComplex(), 
-											                  dstabConfigBean.acscConfigBean.zLL.toComplex()); 
-				                   
-		
-		if(dstabDSL.initialize()){
-			if( dstabDSL.runDStab())
-				return dstabDSL.getOutputHandler();
-		}
-		
-		return null;
-	}
+	public abstract IDStabSimuOutputHandler runDstab (DstabRunConfigBean dstabConfigBean);
 
 	@Override
 	public BaseJSONBean loadConfiguraitonBean(String beanFileName) {
